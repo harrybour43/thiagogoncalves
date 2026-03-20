@@ -39,11 +39,16 @@
         font-family: "Inter", sans-serif;
         display: flex;
         justify-content: center;
-        min-height: 100vh;
+        /* MUDANÇA 1: Trava a altura exata da tela (dvh é focado em mobile) */
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden; /* Evita que a página inteira role, apenas a galeria rolará */
       }
 
       .app-container {
         width: 100%;
+        /* MUDANÇA 2: Garante que o container respeite a trava do body */
+        height: 100%;
         padding: 15px;
         display: flex;
         flex-direction: column;
@@ -189,10 +194,11 @@
         display: none;
         grid-template-columns: repeat(3, 1fr);
         gap: 10px;
-        flex-grow: 1;
+        /* MUDANÇA 3: Ocupa todo o espaço dinamicamente sem forçar a tela para baixo */
+        flex: 1 1 0;
         overflow-y: auto;
-        margin-bottom: 30px;
-        max-height: 500px;
+        margin-bottom: 20px;
+        /* A LINHA max-height: 500px; FOI APAGADA DAQUI */
       }
       .gallery-area.active {
         display: grid;
