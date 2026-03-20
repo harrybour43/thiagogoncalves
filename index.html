@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galeria - Ryan 1 Ano</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Lora:ital,wght@0,400;0,600&family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --bg-color: #f4f6f8;
+        --text-main: #111;
+        --text-muted: #555;
+        --btn-bg: #ffffff;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --whatsapp-green: #25d366;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        font-family: "Inter", sans-serif;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .app-container {
+        width: 100%;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+
+      @media (min-width: 768px) {
+        .app-container {
+          max-width: 75%;
+          border-left: 1px solid #ddd;
+          border-right: 1px solid #ddd;
+          background-color: #fafcff;
+        }
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 30px;
+        padding-top: 10px;
+      }
+      .event-info {
+        display: flex;
+        flex-direction: column;
+      }
+      .event-name {
+        font-family: "Caveat", cursive;
+        font-size: 2.5rem;
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+      .event-type {
+        font-family: "Lora", serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .event-date {
+        font-family: "Inter", sans-serif;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .drive-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text-main);
+        font-family: "Inter", sans-serif;
+        font-size: 0.75rem;
+        text-align: center;
+        gap: 5px;
+      }
+      .drive-link i {
+        font-size: 1.8rem;
+      }
+
+      .carousel-area {
+        position: relative;
+        flex-grow: 1;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 30px;
+      }
+
+      .loader {
+        position: absolute;
+        font-family: "Inter", sans-serif;
+        color: var(--text-muted);
+        font-size: 1rem;
+        z-index: 20;
+      }
+
+      .carousel-track {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .slide {
+        position: absolute;
+        transition: all 0.4s ease;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        object-fit: cover;
+      }
+      .slide.active {
+        width: 70%;
+        height: 350px;
+        z-index: 2;
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+      .slide.prev {
+        width: 70%;
+        height: 350px;
+        z-index: 1;
+        opacity: 0.4;
+        transform: translateX(-60%) scale(0.8);
+      }
+      .slide.next {
+        width: 70%;
+        height: 350px;
+        z-index: 1;
+        opacity: 0.4;
+        transform: translateX(60%) scale(0.8);
+      }
+
+      .click-area-left,
+      .click-area-right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 15%;
+        z-index: 10;
+        cursor: pointer;
+      }
+      .click-area-left {
+        left: 0;
+      }
+      .click-area-right {
+        right: 0;
+      }
+
+      .gallery-area {
+        display: none;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-bottom: 30px;
+        max-height: 500px;
+      }
+      .gallery-area.active {
+        display: grid;
+      }
+      .gallery-item {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 40px;
+      }
+      .btn-control {
+        background-color: var(--btn-bg);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 25px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        font-family: "Lora", serif;
+        font-size: 1rem;
+        color: var(--text-main);
+        cursor: pointer;
+        width: 120px;
+        transition: transform 0.1s;
+      }
+      .btn-control:active {
+        transform: scale(0.95);
+      }
+      .btn-control i {
+        font-size: 1.5rem;
+      }
+
+      #area4 {
+        display: none;
+      }
+
+      footer {
+        margin-top: auto;
+        padding: 20px 0;
+        border-top: 1px solid #eaeaea;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
+      }
+
+      .credit-line {
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .whatsapp-link {
+        color: var(--whatsapp-green);
+        font-size: 1.1rem;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <header>
+        <div class="event-info">
+          <h1 class="event-name">Ryan</h1>
+          <h2 class="event-type">aniversário 1 ano</h2>
+          <span class="event-date">28 de dezembro de 2025</span>
+        </div>
+        <a
+          href="https://drive.google.com/drive/folders/13ik8edSA3pZ1ojchGBdyrGdLUlDxyauG"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="drive-link"
+        >
+          <i class="fa-regular fa-folder-open"></i>
+          <span>Ver no<br />Google Drive</span>
+        </a>
+      </header>
+
+      <main id="view-carousel" class="carousel-area">
+        <div id="loader" class="loader">Carregando galeria...</div>
+        <div class="click-area-left" onclick="moveCarousel(-1)"></div>
+        <div class="carousel-track" id="track"></div>
+        <div class="click-area-right" onclick="moveCarousel(1)"></div>
+      </main>
+
+      <main id="view-gallery" class="gallery-area"></main>
+
+      <div class="controls">
+        <button
+          class="btn-control"
+          id="btn-toggle-view"
+          onclick="toggleView()"
+          style="display: none"
+        >
+          <i class="fa-solid fa-border-all"></i>
+          <span id="text-toggle-view">Galeria</span>
+        </button>
+      </div>
+
+      <div id="area4"></div>
+
+      <footer>
+        <div class="credit-line">
+          Fotógrafo: Thiago Gonçalves Nunes
+          <a
+            href="https://wa.me/5511991770097"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="whatsapp-link"
+            ><i class="fa-brands fa-whatsapp"></i
+          ></a>
+        </div>
+        <div class="credit-line">
+          Arte final: Harry Bour
+          <a
+            href="https://wa.me/5511987741066"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="whatsapp-link"
+            ><i class="fa-brands fa-whatsapp"></i
+          ></a>
+        </div>
+      </footer>
+    </div>
+
+    <script
+      async
+      defer
+      src="https://apis.google.com/js/api.js"
+      onload="gapiLoaded()"
+    ></script>
+
+    <script>
+      const API_KEY = "AIzaSyBSqkKDWvXjswvsOzEeSWuXFq85G3xBELc"; // Sua chave
+      const FOLDER_ID = "13ik8edSA3pZ1ojchGBdyrGdLUlDxyauG";
+
+      let imagesData = [];
+      let currentIndex = 0;
+      let isGalleryView = false;
+
+      function gapiLoaded() {
+        gapi.load("client", () => {
+          gapi.client
+            .init({
+              apiKey: API_KEY,
+              discoveryDocs: [
+                "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+              ],
+            })
+            .then(() => {
+              console.log("GAPI inicializado. Buscando fotos...");
+              listPhotos();
+            })
+            .catch((err) => {
+              console.error("Erro ao inicializar GAPI", err);
+              document.getElementById("loader").innerText =
+                "Erro ao conectar com Google Drive.";
+            });
+        });
+      }
+
+      async function listPhotos() {
+        try {
+          // Busca arquivos na pasta especificada que sejam imagens e não estejam na lixeira
+          let response = await gapi.client.drive.files.list({
+            q: `'${FOLDER_ID}' in parents and mimeType contains 'image/' and trashed = false`,
+            fields: "files(id, name)",
+            pageSize: 100, // Traz até 100 fotos de uma vez
+          });
+
+          let files = response.result.files;
+
+          if (files && files.length > 0) {
+            // Transforma os IDs em URLs diretas de imagem
+            imagesData = files.map(
+              (file) => `https://drive.google.com/uc?id=${file.id}`
+            );
+
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("btn-toggle-view").style.display = "flex";
+            initApp();
+          } else {
+            document.getElementById("loader").innerText =
+              "Nenhuma foto encontrada na pasta.";
+          }
+        } catch (err) {
+          console.error("Erro ao listar arquivos", err);
+          document.getElementById("loader").innerText =
+            "Erro ao carregar imagens.";
+        }
+      }
+
+      function initApp() {
+        renderCarousel();
+        renderGallery();
+        setupSwipe();
+      }
+
+      function renderCarousel() {
+        const track = document.getElementById("track");
+        track.innerHTML = "";
+
+        if (imagesData.length === 0) return;
+
+        imagesData.forEach((src, index) => {
+          const img = document.createElement("img");
+          img.src = src;
+
+          if (index === currentIndex) {
+            img.className = "slide active";
+          } else if (index === getPrevIndex()) {
+            img.className = "slide prev";
+          } else if (index === getNextIndex()) {
+            img.className = "slide next";
+          } else {
+            img.className = "slide";
+            img.style.display = "none";
+          }
+
+          track.appendChild(img);
+        });
+      }
+
+      function getPrevIndex() {
+        return currentIndex === 0 ? imagesData.length - 1 : currentIndex - 1;
+      }
+      function getNextIndex() {
+        return currentIndex === imagesData.length - 1 ? 0 : currentIndex + 1;
+      }
+
+      function moveCarousel(direction) {
+        if (imagesData.length === 0) return;
+        if (direction === 1) currentIndex = getNextIndex();
+        else currentIndex = getPrevIndex();
+        renderCarousel();
+      }
+
+      let touchstartX = 0;
+      let touchendX = 0;
+
+      function setupSwipe() {
+        const carouselArea = document.getElementById("view-carousel");
+
+        carouselArea.addEventListener("touchstart", (e) => {
+          touchstartX = e.changedTouches[0].screenX;
+        });
+
+        carouselArea.addEventListener("touchend", (e) => {
+          touchendX = e.changedTouches[0].screenX;
+          const swipeThreshold = 50;
+          if (touchendX < touchstartX - swipeThreshold) moveCarousel(1);
+          if (touchendX > touchstartX + swipeThreshold) moveCarousel(-1);
+        });
+      }
+
+      function toggleView() {
+        const viewCarousel = document.getElementById("view-carousel");
+        const viewGallery = document.getElementById("view-gallery");
+        const btnText = document.getElementById("text-toggle-view");
+        const btnIcon = document.querySelector("#btn-toggle-view i");
+
+        isGalleryView = !isGalleryView;
+
+        if (isGalleryView) {
+          viewCarousel.style.display = "none";
+          viewGallery.classList.add("active");
+          btnText.innerText = "Carrossel";
+          btnIcon.className = "fa-solid fa-images";
+        } else {
+          viewGallery.classList.remove("active");
+          viewCarousel.style.display = "flex";
+          btnText.innerText = "Galeria";
+          btnIcon.className = "fa-solid fa-border-all";
+        }
+      }
+
+      function renderGallery() {
+        const gallery = document.getElementById("view-gallery");
+        gallery.innerHTML = "";
+
+        imagesData.forEach((src, index) => {
+          const img = document.createElement("img");
+          img.src = src;
+          img.className = "gallery-item";
+          img.onclick = () => {
+            currentIndex = index;
+            toggleView();
+            renderCarousel();
+          };
+          gallery.appendChild(img);
+        });
+      }
+    </script>
+  </body>
+</html>
