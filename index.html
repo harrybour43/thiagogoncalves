@@ -63,7 +63,7 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 30px;
+        margin-bottom: 20px; /* Reduzido levemente */
         padding-top: 10px;
       }
       .event-info {
@@ -103,15 +103,16 @@
         font-size: 1.8rem;
       }
 
+      /* ÁREA 1: Carrossel - Altura aumentada para ganhar espaço ganho */
       .carousel-area {
         position: relative;
         flex-grow: 1;
-        min-height: 400px;
+        min-height: 500px; /* Altura aumentada significativamente */
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        margin-bottom: 30px;
+        margin-bottom: 20px; /* Reduzido levemente */
       }
 
       .loader {
@@ -131,32 +132,40 @@
         height: 100%;
       }
 
+      /* Base do slide - object-fit: cover para garantir que as pilhas fiquem cheias */
       .slide {
         position: absolute;
         transition: all 0.4s ease;
         border-radius: 12px;
         box-shadow: var(--shadow);
-        object-fit: cover;
+        object-fit: cover; /* Mantido cover para as fotos de fundo na pilha */
+        background-color: #eee; /* Cor de fundo caso a imagem demore a carregar */
       }
+
+      /* FOTO CENTRAL (Active) - Lógica de Mixed Ratios */
       .slide.active {
-        width: 70%;
-        height: 350px;
+        width: auto; /* Permite tamanho automático baseado no ratio */
+        height: auto;
+        max-width: 75%; /* Garante que respeite a largura da thumb */
+        max-height: 450px; /* Garante que o retrato não estoure a nova altura ganha */
+        object-fit: contain; /* CRUCIAL: Mostra a imagem inteira sem cortes, respeitando ratio */
         z-index: 2;
         opacity: 1;
         transform: translateX(0) scale(1);
       }
-      .slide.prev {
+
+      /* Fotos Secundárias (Prev/Next) - Mantido formato "pilha" fixo para visual */
+      .slide.prev,
+      .slide.next {
         width: 70%;
-        height: 350px;
+        height: 350px; /* Mantido formato fixo para definir a pilha visual */
         z-index: 1;
         opacity: 0.4;
+      }
+      .slide.prev {
         transform: translateX(-60%) scale(0.8);
       }
       .slide.next {
-        width: 70%;
-        height: 350px;
-        z-index: 1;
-        opacity: 0.4;
         transform: translateX(60%) scale(0.8);
       }
 
@@ -196,33 +205,34 @@
         cursor: pointer;
       }
 
+      /* ÁREA DO BOTÃO (Controls) - Área reduzida pela metade na altura */
       .controls {
         display: flex;
         justify-content: center;
-        margin-bottom: 40px;
+        margin-bottom: 20px; /* Reduzido de 40px */
       }
       .btn-control {
         background-color: var(--btn-bg);
         border: none;
         border-radius: 12px;
-        padding: 15px 25px;
+        padding: 10px 20px; /* Reduzido padding vertical significativamente */
         box-shadow: var(--shadow);
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px;
+        gap: 5px; /* Reduzido gap interno */
         font-family: "Lora", serif;
-        font-size: 1rem;
+        font-size: 0.9rem; /* Levemente reduzido tamanho da fonte */
         color: var(--text-main);
         cursor: pointer;
-        width: 120px;
+        width: 100px; /* Reduzida largura para ficar mais compacto */
         transition: transform 0.1s;
       }
       .btn-control:active {
         transform: scale(0.95);
       }
       .btn-control i {
-        font-size: 1.5rem;
+        font-size: 1.2rem; /* Reduzido tamanho do ícone */
       }
 
       #area4 {
@@ -231,16 +241,19 @@
 
       footer {
         margin-top: auto;
-        padding: 20px 0;
+        padding: 15px 0; /* Reduzido padding levemente */
         border-top: 1px solid #eaeaea;
         text-align: center;
         font-size: 0.8rem;
         color: var(--text-muted);
-        padding-bottom: max(15px, env(safe-area-inset-bottom));
+        padding-bottom: max(
+          10px,
+          env(safe-area-inset-bottom)
+        ); /* Ajustado safe area */
       }
 
       .credit-line {
-        margin-bottom: 6px;
+        margin-bottom: 5px; /* Reduzido margin levemente */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -262,7 +275,7 @@
           <span class="event-date">28 de dezembro de 2025</span>
         </div>
         <a
-          href="https://drive.google.com/drive/folders/13ik8edSA3pZ1ojchGBdyrGdLUlDxyauG"
+          href="https://drive.google.com/drive/folders/1TgeRRYlOZ9v1Y9bHNrbonTJjPIurRmf9"
           target="_blank"
           rel="noopener noreferrer"
           class="drive-link"
@@ -360,16 +373,18 @@
           // Busca arquivos na pasta especificada que sejam imagens e não estejam na lixeira
           let response = await gapi.client.drive.files.list({
             q: `'${FOLDER_ID}' in parents and mimeType contains 'image/' and trashed = false`,
-            fields: "files(id, name)",
+            // 1. MUDANÇA AQUI: Pedimos o thumbnailLink para a API
+            fields: "files(id, name, thumbnailLink)",
             pageSize: 100, // Traz até 100 fotos de uma vez
           });
 
           let files = response.result.files;
 
           if (files && files.length > 0) {
-            // Transforma os IDs em URLs diretas de imagem
-            imagesData = files.map(
-              (file) => `https://drive.google.com/uc?id=${file.id}`
+            // 2. MUDANÇA AQUI: Usamos o link oficial de exibição.
+            // O replace substitui o tamanho de miniatura padrão pelo tamanho de 1000px de largura
+            imagesData = files.map((file) =>
+              file.thumbnailLink.replace(/\=s\d+$/, "=s1000")
             );
 
             document.getElementById("loader").style.display = "none";
